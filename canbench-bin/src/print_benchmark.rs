@@ -45,6 +45,10 @@ fn print_measurement(new: &Measurement, old: Option<&Measurement>) {
         new.stable_memory_increase,
         old.map(|m| m.stable_memory_increase),
     );
+
+    if let Some(msg) = &new.user_data {
+        println!("    User data: {msg}")
+    }
 }
 
 // Prints a metric along with its percentage change relative to the old value.
