@@ -46,8 +46,11 @@ fn print_measurement(new: &Measurement, old: Option<&Measurement>) {
         old.map(|m| m.stable_memory_increase),
     );
 
+    println!("    User data: ");
     if let Some(msg) = &new.user_data {
-        println!("    User data: {msg}")
+        println!("        {msg}")
+    } else {
+        println!("        None")
     }
 }
 
