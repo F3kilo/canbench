@@ -396,6 +396,15 @@ use std::collections::BTreeMap;
 
 thread_local! {
     static SCOPES: RefCell<BTreeMap<&'static str, Measurement>> = RefCell::new(BTreeMap::new());
+    static USER_DATA: RefCell<Option<String>> = RefCell::default();
+}
+
+pub fn get_user_data() -> Option<String> {
+    USER_DATA.with(|ud| ud.borrow().clone())
+}
+
+pub fn set_user_data(data: Option<String>) -> Option<String> {
+    USER_DATA.with(|ud| ud.replace(data))
 }
 
 /// The results of a benchmark.
@@ -423,6 +432,9 @@ pub struct Measurement {
     /// The increase in stable memory (measured in pages).
     #[serde(default)]
     pub stable_memory_increase: u64,
+
+    /// User-defined data, if needed.
+    pub user_data: Option<String>,
 }
 
 /// Benchmarks the given function.
@@ -440,6 +452,7 @@ pub fn bench_fn<R>(f: impl FnOnce() -> R) -> BenchResult {
         instructions,
         heap_increase,
         stable_memory_increase,
+        user_data: get_user_data(),
     };
 
     let scopes: std::collections::BTreeMap<_, _> = get_scopes_measurements()
@@ -521,6 +534,7 @@ impl Drop for BenchScope {
                     instructions,
                     heap_increase,
                     stable_memory_increase,
+                    user_data: get_user_data(),
                 },
             );
 
